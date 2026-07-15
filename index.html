@@ -1,0 +1,542 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=5.0, user-scalable=yes">
+    <title>Canberra Evening Edition</title>
+    <link rel="manifest" href="manifest.json">
+    <meta name="apple-mobile-web-app-capable" content="yes">
+    <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+    <meta name="apple-mobile-web-app-title" content="Canberra Eve">
+    <link rel="apple-touch-icon" href="https://img.icons8.com/ios-filled/512/8c1d1d/news.png">
+    
+    <style>
+        :root {
+            --bg-color: #f5edd6;      /* Rich antique sepia paper */
+            --text-color: #2b2927;    /* Charcoal text (warmer/easier on eyes than pure black) */
+            --accent-color: #8c1d1d;  /* Deep editorial red */
+            --border-color: #decfa8;  /* Soft paper crease line */
+            --meta-color: #6e6454;    /* Muted sepia for dates */
+            --card-bg: #FAF3E3;       /* Slightly lighter highlight for article blocks */
+        }
+
+        /* Large Text Sizing Defaults for Older Eyes */
+        body.text-medium { --font-body: 20px; --font-heading: 26px; --font-mast: 34px; }
+        body.text-large { --font-body: 24px; --font-heading: 30px; --font-mast: 40px; }
+        body.text-xlarge { --font-body: 28px; --font-heading: 34px; --font-mast: 46px; }
+
+        * {
+            box-sizing: border-box;
+            -webkit-tap-highlight-color: transparent;
+        }
+
+        body {
+            background-color: var(--bg-color);
+            color: var(--text-color);
+            font-family: "Georgia", Times, "Times New Roman", serif;
+            margin: 0;
+            padding: 0;
+            line-height: 1.6;
+            transition: background 0.3s, color 0.3s;
+        }
+
+        .container {
+            max-width: 680px;
+            margin: 0 auto;
+            padding: 20px 15px 80px 15px;
+        }
+
+        /* Utility Header Controls */
+        .top-bar {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            border-bottom: 1px solid var(--border-color);
+            padding-bottom: 8px;
+            margin-bottom: 15px;
+        }
+
+        .text-controls button {
+            background: none;
+            border: 1px solid var(--border-color);
+            color: var(--text-color);
+            padding: 5px 12px;
+            font-family: inherit;
+            font-size: 14px;
+            border-radius: 4px;
+            margin-left: 5px;
+            cursor: pointer;
+            background-color: var(--card-bg);
+        }
+
+        .text-controls button.active {
+            background-color: var(--accent-color);
+            color: #fff;
+            border-color: var(--accent-color);
+        }
+
+        /* Masthead Styling */
+        header {
+            text-align: center;
+            margin-bottom: 30px;
+        }
+
+        header h1 {
+            font-size: var(--font-mast);
+            font-weight: 900;
+            letter-spacing: -1px;
+            margin: 10px 0 5px 0;
+            text-transform: uppercase;
+            border-bottom: 4px double var(--text-color);
+            padding-bottom: 8px;
+        }
+
+        .edition-line {
+            font-size: 15px;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+            color: var(--meta-color);
+            margin: 5px 0;
+            font-weight: bold;
+        }
+
+        /* Section Headings */
+        .section-header {
+            border-bottom: 2px solid var(--accent-color);
+            margin: 40px 0 20px 0;
+            padding-bottom: 3px;
+        }
+
+        .section-header h2 {
+            font-size: var(--font-heading);
+            color: var(--accent-color);
+            margin: 0;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+        }
+
+        /* Article Cards */
+        .article-card {
+            background-color: var(--card-bg);
+            border: 1px solid var(--border-color);
+            padding: 20px;
+            margin-bottom: 20px;
+            border-radius: 6px;
+            cursor: pointer;
+            box-shadow: 0 2px 4px rgba(0,0,0,0.02);
+            transition: transform 0.1s;
+        }
+
+        .article-card:active {
+            transform: scale(0.99);
+        }
+
+        .article-meta {
+            font-size: 14px;
+            color: var(--meta-color);
+            margin-bottom: 8px;
+            text-transform: uppercase;
+            font-weight: bold;
+        }
+
+        .article-title {
+            font-size: var(--font-heading);
+            margin: 0 0 10px 0;
+            line-height: 1.3;
+            font-weight: bold;
+        }
+
+        .article-snippet {
+            font-size: var(--font-body);
+            margin: 0 0 15px 0;
+            color: #444;
+        }
+
+        .read-more {
+            color: var(--accent-color);
+            font-size: 16px;
+            font-weight: bold;
+            text-decoration: underline;
+        }
+
+        /* Full Article Reader Mode */
+        #reader-view {
+            display: none;
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background-color: var(--bg-color);
+            z-index: 1000;
+            overflow-y: scroll;
+            padding: 20px 15px 80px 15px;
+        }
+
+        .reader-container {
+            max-width: 650px;
+            margin: 0 auto;
+        }
+
+        .back-btn {
+            background-color: var(--accent-color);
+            color: #fff;
+            border: none;
+            padding: 12px 20px;
+            font-size: 18px;
+            font-weight: bold;
+            border-radius: 6px;
+            cursor: pointer;
+            margin-bottom: 25px;
+            font-family: inherit;
+        }
+
+        .reader-title {
+            font-size: calc(var(--font-heading) * 1.2);
+            font-weight: 900;
+            line-height: 1.3;
+            margin: 15px 0;
+        }
+
+        .reader-body {
+            font-size: var(--font-body);
+            line-height: 1.7;
+        }
+
+        .reader-body p {
+            margin-bottom: 25px;
+        }
+
+        /* Loading Screen Style */
+        .loader-container {
+            display: none;
+            position: fixed;
+            top: 0; left: 0; width: 100%; height: 100%;
+            background-color: var(--bg-color);
+            z-index: 2000;
+            justify-content: center;
+            align-items: center;
+            text-align: center;
+            padding: 20px;
+        }
+
+        .loader-content h2 {
+            font-size: 28px;
+            margin-top: 20px;
+        }
+
+        .loader-content p {
+            font-size: 18px;
+            color: var(--meta-color);
+        }
+
+        .spinner {
+            border: 4px solid var(--border-color);
+            border-top: 4px solid var(--accent-color);
+            border-radius: 50%;
+            width: 50px;
+            height: 50px;
+            animation: spin 1s linear infinite;
+            margin: 30px auto;
+        }
+
+        @keyframes spin {
+            0% { transform: rotate(0deg); }
+            100% { transform: rotate(360deg); }
+        }
+    </style>
+</head>
+<body class="text-large">
+
+    <!-- Loading Screen -->
+    <div id="loader" class="loader-container">
+        <div class="loader-content">
+            <span style="font-size: 60px;">📰</span>
+            <h2>Printing Tonight's Edition...</h2>
+            <p id="loader-status">Assembling Canberra news and world events.</p>
+            <div class="spinner"></div>
+        </div>
+    </div>
+
+    <!-- Main Front Page -->
+    <div class="container" id="main-view">
+        <div class="top-bar">
+            <div style="font-size: 14px; font-weight: bold; color: var(--meta-color);" id="sync-status">Ad-Free Reader</div>
+            <div class="text-controls">
+                <button id="btn-med" onclick="setTextSize('medium')">A</button>
+                <button id="btn-lrg" onclick="setTextSize('large')" class="active">A+</button>
+                <button id="btn-xlrg" onclick="setTextSize('xlarge')">A++</button>
+            </div>
+        </div>
+
+        <header>
+            <h1>The Evening Edition</h1>
+            <div class="edition-line" id="edition-date">...</div>
+            <div style="font-size: 13px; letter-spacing: 0.5px; color: var(--meta-color); font-style: italic;">
+                Refreshed at 5:00 PM Daily • High-Contrast Print
+            </div>
+        </header>
+
+        <!-- Canberra Section -->
+        <div class="section-header">
+            <h2>Canberra & ACT</h2>
+        </div>
+        <div id="section-canberra"></div>
+
+        <!-- Australia Section -->
+        <div class="section-header">
+            <h2>Australian Affairs</h2>
+        </div>
+        <div id="section-australia"></div>
+
+        <!-- World Section -->
+        <div class="section-header">
+            <h2>World Desk</h2>
+        </div>
+        <div id="section-world"></div>
+
+        <div style="text-align: center; margin-top: 60px;">
+            <button onclick="forceReprint()" style="background: none; border: 1px solid var(--border-color); color: var(--meta-color); padding: 10px 20px; font-family: inherit; border-radius: 5px; cursor: pointer;">
+                🔄 Force Reprint Today's Paper
+            </button>
+        </div>
+    </div>
+
+    <!-- Reader Modal -->
+    <div id="reader-view">
+        <div class="reader-container">
+            <button class="back-btn" onclick="closeArticle()">← Back to Front Page</button>
+            <div class="article-meta" id="reader-meta"></div>
+            <h1 class="reader-title" id="reader-title"></h1>
+            <hr style="border: 0; border-top: 1px solid var(--border-color); margin: 20px 0;">
+            <div class="reader-body" id="reader-body"></div>
+            <button class="back-btn" onclick="closeArticle()" style="margin-top: 40px; width: 100%;">← Back to Front Page</button>
+        </div>
+    </div>
+
+    <script>
+        // Feeds that are 100% free with rich RSS content (no paywalls)
+        const FEEDS = {
+            canberra: 'https://the-riotact.com/feed',
+            australia: 'https://www.theguardian.com/australia-news/rss',
+            world: 'https://www.theguardian.com/world/rss'
+        };
+
+        let activeEditionData = null;
+
+        // Determine correct edition date: If opened before 5 PM today, show yesterday's edition
+        function getTargetEditionDate() {
+            const now = new Date();
+            const fivePM = new Date(now.getFullYear(), now.getMonth(), now.getDate(), 17, 0, 0);
+            const target = new Date(now);
+            if (now < fivePM) {
+                target.setDate(now.getDate() - 1);
+            }
+            return target.toISOString().split('T')[0]; // Format: YYYY-MM-DD
+        }
+
+        // Set Text Size Configuration
+        function setTextSize(size) {
+            document.body.className = ''; 
+            document.body.classList.add('text-' + size);
+            localStorage.setItem('pref_text_size', size);
+            
+            document.querySelectorAll('.text-controls button').forEach(b => b.classList.remove('active'));
+            if(size === 'medium') document.getElementById('btn-med').classList.add('active');
+            if(size === 'large') document.getElementById('btn-lrg').classList.add('active');
+            if(size === 'xlarge') document.getElementById('btn-xlrg').classList.add('active');
+        }
+
+        // Clean HTML to ensure high quality, plain-text reading mode
+        function sanitizeAndFormatContent(html) {
+            const tempDiv = document.createElement('div');
+            tempDiv.innerHTML = html;
+            
+            // Strip out scripts, frames, styling, tracking pixels, ads, and pictures
+            const removeTags = ['script', 'style', 'iframe', 'noscript', 'form', 'svg', 'button', 'img'];
+            removeTags.forEach(tag => {
+                const els = tempDiv.getElementsByTagName(tag);
+                while(els.length > 0) { els[0].parentNode.removeChild(els[0]); }
+            });
+
+            // Convert paragraphs to readable spacing
+            const paragraphs = tempDiv.getElementsByTagName('p');
+            let outputHTML = '';
+            for (let p of paragraphs) {
+                const text = p.textContent.trim();
+                if (text.length > 30) { // filter out random blank meta-data lines
+                    outputHTML += `<p>${text}</p>`;
+                }
+            }
+
+            // Fallback if no paragraphs are parsed
+            if (!outputHTML) {
+                outputHTML = `<p>${tempDiv.textContent.trim()}</p>`;
+            }
+
+            return outputHTML;
+        }
+
+        function getSnippet(html) {
+            const tempDiv = document.createElement('div');
+            tempDiv.innerHTML = html;
+            const cleanText = tempDiv.textContent || tempDiv.innerText || "";
+            const trimmed = cleanText.replace(/\s+/g, ' ').trim();
+            return trimmed.length > 150 ? trimmed.substring(0, 147) + '...' : trimmed;
+        }
+
+        // Dynamic RSS parser supporting primary converter with an automatic failover proxy
+        async function fetchFeed(url) {
+            try {
+                // Primary: RSS2JSON (fastest and pre-parsed)
+                const res = await fetch(`https://api.rss2json.com/v1/api.json?rss_url=${encodeURIComponent(url)}`);
+                if (!res.ok) throw new Error("rss2json fail");
+                const json = await res.ok ? await res.json() : null;
+                if (!json || json.status !== 'ok') throw new Error("rss2json data error");
+                return json.items.map(i => ({
+                    title: i.title,
+                    link: i.link,
+                    pubDate: i.pubDate,
+                    snippet: getSnippet(i.description),
+                    content: sanitizeAndFormatContent(i.content || i.description)
+                }));
+            } catch (err) {
+                console.warn("Switching to backup parsing framework due to network delay...");
+                // Secondary fallback: AllOrigins proxy + Native Browser Parser
+                const res = await fetch(`https://api.allorigins.win/get?url=${encodeURIComponent(url)}`);
+                const json = await res.json();
+                const parser = new DOMParser();
+                const xml = parser.parseFromString(json.contents, "text/xml");
+                const items = xml.querySelectorAll("item");
+                const list = [];
+                items.forEach(item => {
+                    const title = item.querySelector("title")?.textContent || "";
+                    const link = item.querySelector("link")?.textContent || "";
+                    const pubDate = item.querySelector("pubDate")?.textContent || "";
+                    const desc = item.querySelector("description")?.textContent || "";
+                    
+                    let content = "";
+                    const contentNode = item.getElementsByTagNameNS("http://purl.org/rss/1.0/modules/content/", "encoded")[0];
+                    content = contentNode ? contentNode.textContent : desc;
+
+                    list.push({
+                        title, link, pubDate,
+                        snippet: getSnippet(desc),
+                        content: sanitizeAndFormatContent(content)
+                    });
+                });
+                return list;
+            }
+        }
+
+        async function printNewspaper() {
+            document.getElementById('loader').style.display = 'flex';
+            const targetDate = getTargetEditionDate();
+
+            try {
+                document.getElementById('loader-status').innerText = "Reaching out to Canberra local sources...";
+                const canberraRaw = await fetchFeed(FEEDS.canberra);
+                
+                document.getElementById('loader-status').innerText = "Reviewing Australian national wires...";
+                const australiaRaw = await fetchFeed(FEEDS.australia);
+                
+                document.getElementById('loader-status').innerText = "Sorting through International global cables...";
+                const worldRaw = await fetchFeed(FEEDS.world);
+
+                const newspaper = {
+                    date: targetDate,
+                    canberra: canberraRaw.slice(0, 5),
+                    australia: australiaRaw.slice(0, 5),
+                    world: worldRaw.slice(0, 5)
+                };
+
+                localStorage.setItem('newspaper_edition_' + targetDate, JSON.stringify(newspaper));
+                activeEditionData = newspaper;
+                renderNewspaper();
+            } catch (err) {
+                alert("The Printing Press encountered a minor system delay. Tap \"Force Reprint\" to try again.");
+                console.error(err);
+            } finally {
+                document.getElementById('loader').style.display = 'none';
+            }
+        }
+
+        function renderNewspaper() {
+            if (!activeEditionData) return;
+
+            // Display dynamic Date in header
+            const editionDateObj = new Date(activeEditionData.date);
+            const options = { weekday: 'long', year: 'numeric', month: 'long', day: 'numeric' };
+            document.getElementById('edition-date').innerText = editionDateObj.toLocaleDateString('en-AU', options);
+
+            // Populate Sections
+            renderSection('section-canberra', activeEditionData.canberra, 'canberra');
+            renderSection('section-australia', activeEditionData.australia, 'australia');
+            renderSection('section-world', activeEditionData.world, 'world');
+        }
+
+        function renderSection(elementId, articles, sectionKey) {
+            const container = document.getElementById(elementId);
+            container.innerHTML = '';
+            
+            if(!articles || articles.length === 0) {
+                container.innerHTML = '<p style="font-style: italic;">This section is currently being restocked...</p>';
+                return;
+            }
+
+            articles.forEach((art, index) => {
+                const card = document.createElement('div');
+                card.className = 'article-card';
+                card.onclick = () => readArticle(sectionKey, index);
+                card.innerHTML = `
+                    <div class="article-meta">Tonight's Column</div>
+                    <h3 class="article-title">${art.title}</h3>
+                    <p class="article-snippet">${art.snippet}</p>
+                    <div class="read-more">Read Full Column →</div>
+                `;
+                container.appendChild(card);
+            });
+        }
+
+        function readArticle(sectionKey, index) {
+            const article = activeEditionData[sectionKey][index];
+            document.getElementById('reader-title').innerText = article.title;
+            document.getElementById('reader-meta').innerText = `Evening Edition • ${sectionKey.toUpperCase()} DESK`;
+            document.getElementById('reader-body').innerHTML = article.content;
+            
+            document.getElementById('reader-view').style.display = 'block';
+            window.scrollTo(0,0);
+        }
+
+        function closeArticle() {
+            document.getElementById('reader-view').style.display = 'none';
+        }
+
+        function forceReprint() {
+            printNewspaper();
+        }
+
+        // Initialize App
+        window.onload = () => {
+            // Restore text size preference
+            const savedSize = localStorage.getItem('pref_text_size') || 'large';
+            setTextSize(savedSize);
+
+            const targetDate = getTargetEditionDate();
+            const cachedPaper = localStorage.getItem('newspaper_edition_' + targetDate);
+
+            if (cachedPaper) {
+                activeEditionData = JSON.parse(cachedPaper);
+                renderNewspaper();
+            } else {
+                printNewspaper();
+            }
+        };
+
+        // Register Service Worker for seamless offline reading
+        if ('serviceWorker' in navigator) {
+            navigator.serviceWorker.register('sw.js').catch(err => console.log('SW registration skipped', err));
+        }
+    </script>
+</body>
+</html>
