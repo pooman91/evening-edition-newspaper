@@ -7,23 +7,42 @@
     <link rel="manifest" href="manifest.json">
     <meta name="apple-mobile-web-app-capable" content="yes">
     <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
-    <meta name="apple-mobile-web-app-title" content="Canberra Eve">
+    <meta name="apple-mobile-web-app-title" content="Evening News">
     <link rel="apple-touch-icon" href="https://img.icons8.com/ios-filled/512/8c1d1d/news.png">
     
     <style>
+        /* Modern Editorial Palette System */
         :root {
-            --bg-color: #f5edd6;      /* Rich antique sepia paper */
-            --text-color: #2b2927;    /* Charcoal text (warmer/easier on eyes than pure black) */
-            --accent-color: #8c1d1d;  /* Deep editorial red */
-            --border-color: #decfa8;  /* Soft paper crease line */
-            --meta-color: #6e6454;    /* Muted sepia for dates */
-            --card-bg: #FAF3E3;       /* Slightly lighter highlight for article blocks */
+            --bg-color: #f5edd6;      
+            --text-color: #2b2927;    
+            --accent-color: #8c1d1d;  
+            --border-color: #decfa8;  
+            --meta-color: #6e6454;    
+            --card-bg: #FAF3E3;       
+            --tag-bg: rgba(140, 29, 29, 0.08);
+            --img-filter: multiply(1.0) contrast(1.05);
         }
 
-        /* Large Text Sizing Defaults for Older Eyes */
-        body.text-medium { --font-body: 20px; --font-heading: 26px; --font-mast: 34px; }
-        body.text-large { --font-body: 24px; --font-heading: 30px; --font-mast: 40px; }
-        body.text-xlarge { --font-body: 28px; --font-heading: 34px; --font-mast: 46px; }
+        /* Dark Theme Variables */
+        [data-theme="dark"] {
+            --bg-color: #171615;      
+            --text-color: #e6e1d5;    
+            --accent-color: #e64e4e;  
+            --border-color: #383531;  
+            --meta-color: #a39989;    
+            --card-bg: #211f1e;       
+            --tag-bg: rgba(230, 78, 78, 0.15);
+            --img-filter: grayscale(0.2) contrast(0.9);
+        }
+
+        /* Responsive Type Tuning for Senior Eyes */
+        body.text-medium { --font-body: 19px; --font-heading: 24px; --font-mast: 36px; }
+        body.text-large { --font-body: 22px; --font-heading: 28px; --font-mast: 42px; }
+        body.text-xlarge { --font-body: 26px; --font-heading: 32px; --font-mast: 48px; }
+
+        /* Font Family Configurations */
+        body.font-style-serif { font-family: "Georgia", Times, "Times New Roman", serif; }
+        body.font-style-sans { font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif; }
 
         * {
             box-sizing: border-box;
@@ -33,40 +52,43 @@
         body {
             background-color: var(--bg-color);
             color: var(--text-color);
-            font-family: "Georgia", Times, "Times New Roman", serif;
             margin: 0;
             padding: 0;
-            line-height: 1.6;
-            transition: background 0.3s, color 0.3s;
+            line-height: 1.65;
+            transition: background-color 0.25s ease, color 0.25s ease;
         }
 
         .container {
-            max-width: 680px;
+            max-width: 720px;
             margin: 0 auto;
-            padding: 20px 15px 80px 15px;
+            padding: 20px 16px 100px 16px;
         }
 
-        /* Utility Header Controls */
+        /* Control Panel Design */
         .top-bar {
             display: flex;
             justify-content: space-between;
             align-items: center;
             border-bottom: 1px solid var(--border-color);
-            padding-bottom: 8px;
-            margin-bottom: 15px;
+            padding-bottom: 10px;
+            margin-bottom: 20px;
         }
 
-        .text-controls button {
+        .bar-left button, .text-controls button {
             background: none;
             border: 1px solid var(--border-color);
             color: var(--text-color);
-            padding: 5px 12px;
+            padding: 6px 12px;
             font-family: inherit;
             font-size: 14px;
-            border-radius: 4px;
-            margin-left: 5px;
+            border-radius: 6px;
             cursor: pointer;
             background-color: var(--card-bg);
+            font-weight: bold;
+        }
+
+        .text-controls button {
+            margin-left: 4px;
         }
 
         .text-controls button.active {
@@ -75,36 +97,85 @@
             border-color: var(--accent-color);
         }
 
-        /* Masthead Styling */
+        /* Classic Broadsheet Masthead */
         header {
             text-align: center;
-            margin-bottom: 30px;
+            margin-bottom: 25px;
         }
 
         header h1 {
             font-size: var(--font-mast);
             font-weight: 900;
-            letter-spacing: -1px;
-            margin: 10px 0 5px 0;
+            letter-spacing: -0.5px;
+            margin: 12px 0 6px 0;
             text-transform: uppercase;
-            border-bottom: 4px double var(--text-color);
-            padding-bottom: 8px;
         }
 
-        .edition-line {
+        .masthead-subline {
+            border-top: 4px double var(--text-color);
+            border-bottom: 1px solid var(--border-color);
+            padding: 8px 0;
+            margin-top: 10px;
             font-size: 15px;
             text-transform: uppercase;
             letter-spacing: 1px;
             color: var(--meta-color);
-            margin: 5px 0;
+            font-weight: bold;
+            text-align: center;
+        }
+
+        /* Always-Visible Permanent Weather Ledger */
+        .weather-ledger {
+            display: flex;
+            overflow-x: auto;
+            gap: 8px;
+            padding: 12px 0 16px 0;
+            border-bottom: 1px solid var(--border-color);
+            margin-bottom: 25px;
+            scrollbar-width: none;
+        }
+        .weather-ledger::-webkit-scrollbar {
+            display: none;
+        }
+
+        .weather-column {
+            flex: 0 0 calc(14.28% - 7px);
+            min-width: 85px;
+            background-color: var(--card-bg);
+            border: 1px solid var(--border-color);
+            border-radius: 6px;
+            text-align: center;
+            padding: 8px 4px;
+        }
+
+        .weather-column.today-box {
+            border: 2px solid var(--accent-color);
+            background-color: rgba(140, 29, 29, 0.03);
+        }
+
+        .weather-day {
+            font-size: 13px;
+            font-weight: 800;
+            text-transform: uppercase;
+            color: var(--meta-color);
+            margin-bottom: 2px;
+        }
+
+        .weather-icon {
+            font-size: 22px;
+            margin: 4px 0;
+        }
+
+        .weather-range {
+            font-size: 14px;
             font-weight: bold;
         }
 
-        /* Section Headings */
+        /* Section Breaks */
         .section-header {
             border-bottom: 2px solid var(--accent-color);
             margin: 40px 0 20px 0;
-            padding-bottom: 3px;
+            padding-bottom: 4px;
         }
 
         .section-header h2 {
@@ -113,76 +184,129 @@
             margin: 0;
             text-transform: uppercase;
             letter-spacing: 0.5px;
+            font-weight: 800;
         }
 
-        /* Article Cards */
+        /* Premium Two-Column Editorial Card Architecture */
         .article-card {
             background-color: var(--card-bg);
             border: 1px solid var(--border-color);
             padding: 20px;
             margin-bottom: 20px;
-            border-radius: 6px;
+            border-radius: 8px;
             cursor: pointer;
-            box-shadow: 0 2px 4px rgba(0,0,0,0.02);
-            transition: transform 0.1s;
+            box-shadow: 0 4px 12px rgba(0,0,0,0.01);
+            display: flex;
+            gap: 16px;
+            align-items: flex-start;
         }
 
-        .article-card:active {
-            transform: scale(0.99);
+        .card-content-block {
+            flex: 1;
         }
 
-        .article-meta {
-            font-size: 14px;
-            color: var(--meta-color);
-            margin-bottom: 8px;
+        .card-thumb-frame {
+            width: 110px;
+            height: 110px;
+            flex-shrink: 0;
+            border-radius: 6px;
+            overflow: hidden;
+            border: 1px solid var(--border-color);
+            background-color: rgba(0,0,0,0.03);
+        }
+
+        .card-thumb-frame img {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+            filter: var(--img-filter);
+        }
+
+        .source-tag {
+            display: inline-block;
+            font-size: 12px;
+            font-weight: 800;
+            letter-spacing: 1px;
             text-transform: uppercase;
-            font-weight: bold;
+            color: var(--accent-color);
+            background-color: var(--tag-bg);
+            padding: 3px 8px;
+            border-radius: 4px;
+            margin-bottom: 10px;
         }
 
         .article-title {
             font-size: var(--font-heading);
-            margin: 0 0 10px 0;
-            line-height: 1.3;
+            margin: 0 0 8px 0;
+            line-height: 1.35;
             font-weight: bold;
+            letter-spacing: -0.2px;
         }
 
         .article-snippet {
             font-size: var(--font-body);
-            margin: 0 0 15px 0;
-            color: #444;
+            margin: 0 0 12px 0;
+            color: var(--text-color);
+            opacity: 0.85;
         }
 
         .read-more {
             color: var(--accent-color);
-            font-size: 16px;
+            font-size: 15px;
             font-weight: bold;
             text-decoration: underline;
         }
 
-        /* Full Article Reader Mode */
+        /* Immersive Reader View with Whispering Layout Transitions */
         #reader-view {
-            display: none;
             position: fixed;
-            top: 0;
-            left: 0;
-            width: 100%;
-            height: 100%;
+            top: 0; left: 0; width: 100%; height: 100%;
             background-color: var(--bg-color);
             z-index: 1000;
             overflow-y: scroll;
-            padding: 20px 15px 80px 15px;
+            padding: 24px 16px 100px 16px;
+            
+            /* CSS Whispering Rules */
+            opacity: 0;
+            visibility: hidden;
+            transform: translateY(30px);
+            transition: opacity 0.35s cubic-bezier(0.16, 1, 0.3, 1), transform 0.35s cubic-bezier(0.16, 1, 0.3, 1);
+            pointer-events: none;
+        }
+
+        #reader-view.active {
+            opacity: 1;
+            visibility: visible;
+            transform: translateY(0);
+            pointer-events: auto;
         }
 
         .reader-container {
-            max-width: 650px;
+            max-width: 660px;
             margin: 0 auto;
+        }
+
+        .reader-hero-frame {
+            width: 100%;
+            max-height: 320px;
+            overflow: hidden;
+            border-radius: 8px;
+            border: 1px solid var(--border-color);
+            margin: 20px 0;
+        }
+
+        .reader-hero-frame img {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+            filter: var(--img-filter);
         }
 
         .back-btn {
             background-color: var(--accent-color);
             color: #fff;
             border: none;
-            padding: 12px 20px;
+            padding: 14px 24px;
             font-size: 18px;
             font-weight: bold;
             border-radius: 6px;
@@ -191,23 +315,60 @@
             font-family: inherit;
         }
 
+        .save-btn {
+            background-color: transparent;
+            border: 2px solid var(--text-color);
+            color: var(--text-color);
+            padding: 12px 20px;
+            font-size: 16px;
+            font-weight: bold;
+            border-radius: 6px;
+            cursor: pointer;
+            float: right;
+            font-family: inherit;
+        }
+
         .reader-title {
             font-size: calc(var(--font-heading) * 1.2);
             font-weight: 900;
             line-height: 1.3;
             margin: 15px 0;
+            letter-spacing: -0.5px;
         }
 
         .reader-body {
             font-size: var(--font-body);
-            line-height: 1.7;
+            line-height: 1.75;
         }
 
         .reader-body p {
-            margin-bottom: 25px;
+            margin-bottom: 28px;
         }
 
-        /* Loading Screen Style */
+        /* Traditional Broadsheet Sign-off */
+        .paper-break {
+            text-align: center;
+            margin: 60px 0 20px 0;
+            padding-top: 30px;
+            border-top: 1px solid var(--border-color);
+        }
+
+        .paper-break-symbol {
+            font-size: 26px;
+            color: var(--accent-color);
+            letter-spacing: 6px;
+            margin-bottom: 10px;
+        }
+
+        .paper-break-text {
+            font-size: 15px;
+            font-style: italic;
+            text-transform: uppercase;
+            letter-spacing: 2px;
+            color: var(--meta-color);
+        }
+
+        /* Immersive Loader Setup */
         .loader-container {
             display: none;
             position: fixed;
@@ -225,17 +386,11 @@
             margin-top: 20px;
         }
 
-        .loader-content p {
-            font-size: 18px;
-            color: var(--meta-color);
-        }
-
         .spinner {
             border: 4px solid var(--border-color);
             border-top: 4px solid var(--accent-color);
             border-radius: 50%;
-            width: 50px;
-            height: 50px;
+            width: 45px; height: 45px;
             animation: spin 1s linear infinite;
             margin: 30px auto;
         }
@@ -246,22 +401,25 @@
         }
     </style>
 </head>
-<body class="text-large">
+<body class="text-large font-style-serif">
 
-    <!-- Loading Screen -->
+    <!-- Loading Press Overlay -->
     <div id="loader" class="loader-container">
         <div class="loader-content">
             <span style="font-size: 60px;">📰</span>
-            <h2>Printing Tonight's Edition...</h2>
-            <p id="loader-status">Assembling Canberra news and world events.</p>
+            <h2>Assembling Tonight's Layout...</h2>
+            <p id="loader-status" style="color: var(--meta-color); font-size: 18px;">Curating local and national press columns.</p>
             <div class="spinner"></div>
         </div>
     </div>
 
-    <!-- Main Front Page -->
+    <!-- Layout Window Frame -->
     <div class="container" id="main-view">
         <div class="top-bar">
-            <div style="font-size: 14px; font-weight: bold; color: var(--meta-color);" id="sync-status">Ad-Free Reader</div>
+            <div class="bar-left" style="display: flex; gap: 6px;">
+                <button id="theme-toggle" onclick="toggleTheme()">☀️ Day Print</button>
+                <button id="font-style-toggle" onclick="toggleFontStyle()">Type: Print</button>
+            </div>
             <div class="text-controls">
                 <button id="btn-med" onclick="setTextSize('medium')">A</button>
                 <button id="btn-lrg" onclick="setTextSize('large')" class="active">A+</button>
@@ -271,51 +429,69 @@
 
         <header>
             <h1>The Evening Edition</h1>
-            <div class="edition-line" id="edition-date">...</div>
-            <div style="font-size: 13px; letter-spacing: 0.5px; color: var(--meta-color); font-style: italic;">
-                Refreshed at 5:00 PM Daily • High-Contrast Print
-            </div>
+            <div class="masthead-subline" id="edition-date">Loading date line...</div>
         </header>
 
-        <!-- Canberra Section -->
+        <!-- Permanent Professional Weather Ledger Block -->
+        <div class="weather-ledger" id="weather-ledger-shelf">
+            <div class="weather-column"><div class="weather-day">---</div><div class="weather-icon">⏳</div><div class="weather-range">--° / --°</div></div>
+        </div>
+
+        <!-- Canberra Column Desk -->
         <div class="section-header">
             <h2>Canberra & ACT</h2>
         </div>
         <div id="section-canberra"></div>
 
-        <!-- Australia Section -->
+        <!-- Australian National Desk -->
         <div class="section-header">
             <h2>Australian Affairs</h2>
         </div>
         <div id="section-australia"></div>
 
-        <!-- World Section -->
+        <!-- International Desk -->
         <div class="section-header">
             <h2>World Desk</h2>
         </div>
         <div id="section-world"></div>
 
-        <div style="text-align: center; margin-top: 60px;">
-            <button onclick="forceReprint()" style="background: none; border: 1px solid var(--border-color); color: var(--meta-color); padding: 10px 20px; font-family: inherit; border-radius: 5px; cursor: pointer;">
-                🔄 Force Reprint Today's Paper
+        <!-- Permanent Scrapbook Shelf -->
+        <div class="section-header">
+            <h2>Your Scrapbook Columns</h2>
+        </div>
+        <div id="section-scrapbook"></div>
+
+        <!-- Broadsheet Paper Sign-off Break -->
+        <div class="paper-break">
+            <div class="paper-break-symbol">❖   ❖   ❖</div>
+            <div class="paper-break-text">You have finished tonight's edition. Rest well.</div>
+        </div>
+
+        <div style="text-align: center; margin-top: 40px;">
+            <button onclick="forceReprint()" style="background: none; border: 1px solid var(--border-color); color: var(--meta-color); padding: 12px 24px; font-family: inherit; font-size: 16px; border-radius: 6px; cursor: pointer;">
+                🔄 Repress Current Edition
             </button>
         </div>
     </div>
 
-    <!-- Reader Modal -->
+    <!-- Clean Immersive Core Document Reader -->
     <div id="reader-view">
         <div class="reader-container">
-            <button class="back-btn" onclick="closeArticle()">← Back to Front Page</button>
-            <div class="article-meta" id="reader-meta"></div>
+            <button class="save-btn" id="reader-save-btn" onclick="toggleSaveCurrentArticle()">💾 Save Column</button>
+            <button class="back-btn" onclick="closeArticle()">← Return</button>
+            <div class="source-tag" id="reader-meta"></div>
             <h1 class="reader-title" id="reader-title"></h1>
-            <hr style="border: 0; border-top: 1px solid var(--border-color); margin: 20px 0;">
+            
+            <!-- Dynamic Wide Hero Frame -->
+            <div id="reader-hero-target"></div>
+            
+            <hr style="border: 0; border-top: 1px solid var(--border-color); margin: 24px 0;">
             <div class="reader-body" id="reader-body"></div>
-            <button class="back-btn" onclick="closeArticle()" style="margin-top: 40px; width: 100%;">← Back to Front Page</button>
+            <button class="back-btn" onclick="closeArticle()" style="margin-top: 40px; width: 100%;">← Return to Front Page</button>
         </div>
     </div>
 
     <script>
-        // Feeds that are 100% free with rich RSS content (no paywalls)
         const FEEDS = {
             canberra: 'https://the-riotact.com/feed',
             australia: 'https://www.theguardian.com/australia-news/rss',
@@ -323,8 +499,156 @@
         };
 
         let activeEditionData = null;
+        let currentlyViewingArticle = null;
 
-        // Determine correct edition date: If opened before 5 PM today, show yesterday's edition
+        function toggleFontStyle() {
+            const isSans = document.body.classList.contains('font-style-sans');
+            const targetStyle = isSans ? 'serif' : 'sans';
+            
+            document.body.classList.remove('font-style-serif', 'font-style-sans');
+            document.body.classList.add('font-style-' + targetStyle);
+            localStorage.setItem('pref_font_style', targetStyle);
+            
+            document.getElementById('font-style-toggle').innerText = targetStyle === 'sans' ? 'Type: Screen' : 'Type: Print';
+        }
+
+        // Live Canberra Weather Sync Engine (7-Day Ledger Construction)
+        async function fetchCanberraWeather() {
+            try {
+                const res = await fetch('https://api.open-meteo.com/v1/forecast?latitude=-35.2835&longitude=149.1281&daily=weathercode,temperature_2m_max,temperature_2m_min&timezone=Australia%2FSydney');
+                if(!res.ok) throw new Error();
+                const data = await res.json();
+                
+                const ledger = document.getElementById('weather-ledger-shelf');
+                ledger.innerHTML = '';
+
+                for(let i = 0; i < 7; i++) {
+                    const dateStr = data.daily.time[i];
+                    const maxT = Math.round(data.daily.temperature_2m_max[i]);
+                    const minT = Math.round(data.daily.temperature_2m_min[i]);
+                    const dayCode = data.daily.weathercode[i];
+                    
+                    const icon = getWeatherEmoji(dayCode);
+                    const dateObj = new Date(dateStr);
+                    const dayName = i === 0 ? "Today" : dateObj.toLocaleDateString('en-AU', { weekday: 'short' });
+
+                    const col = document.createElement('div');
+                    col.className = `weather-column ${i === 0 ? 'today-box' : ''}`;
+                    col.innerHTML = `
+                        <div class="weather-day">${dayName}</div>
+                        <div class="weather-icon">${icon}</div>
+                        <div class="weather-range">${maxT}° / ${minT}°</div>
+                    `;
+                    ledger.appendChild(col);
+                }
+            } catch (err) {
+                console.error("Weather panel fallback triggered", err);
+            }
+        }
+
+        function getWeatherEmoji(code) {
+            if ([0].includes(code)) return "☀️";
+            if ([1, 2, 3].includes(code)) return "⛅";
+            if ([45, 48].includes(code)) return "🌫️";
+            if ([51, 53, 55, 61, 63, 65, 80, 81, 82].includes(code)) return "🌧️";
+            if ([71, 73, 75, 77, 85, 86].includes(code)) return "❄️";
+            if ([95, 96, 99].includes(code)) return "⛈️";
+            return "☀️";
+        }
+
+        // --- SCRAPBOOK CODES ---
+        function getSavedArticles() {
+            const saved = localStorage.getItem('newspaper_scrapbook');
+            return saved ? JSON.parse(saved) : [];
+        }
+
+        function renderScrapbookShelf() {
+            const container = document.getElementById('section-scrapbook');
+            container.innerHTML = '';
+            const saved = getSavedArticles();
+
+            if(saved.length === 0) {
+                container.innerHTML = '<p style="font-style: italic; opacity: 0.6; padding: 10px 0;">Your scrapbook is currently empty. Tap "Save Column" inside any article to pin it here permanently.</p>';
+                return;
+            }
+
+            saved.forEach((art, index) => {
+                const card = document.createElement('div');
+                card.className = 'article-card';
+                card.onclick = () => readSavedArticle(index);
+                
+                let imgBlock = '';
+                if(art.imageUrl) {
+                    imgBlock = `<div class="card-thumb-frame"><img src="${art.imageUrl}" alt="Column Graphic"></div>`;
+                }
+
+                card.innerHTML = `
+                    <div class="card-content-block">
+                        <div class="source-tag">${art.source}</div>
+                        <h3 class="article-title">${art.title}</h3>
+                        <p class="article-snippet">${art.snippet}</p>
+                        <div class="read-more">Open Saved Column →</div>
+                    </div>
+                    ${imgBlock}
+                `;
+                container.appendChild(card);
+            });
+        }
+
+        function toggleSaveCurrentArticle() {
+            if(!currentlyViewingArticle) return;
+            let saved = getSavedArticles();
+            const existsIndex = saved.findIndex(a => a.title === currentlyViewingArticle.title);
+            const btn = document.getElementById('reader-save-btn');
+
+            if(existsIndex > -1) {
+                saved.splice(existsIndex, 1);
+                btn.innerHTML = "💾 Save Column";
+            } else {
+                saved.push(currentlyViewingArticle);
+                btn.innerHTML = "💝 Saved to Scrapbook";
+            }
+
+            localStorage.setItem('newspaper_scrapbook', JSON.stringify(saved));
+            renderScrapbookShelf();
+        }
+
+        function readSavedArticle(index) {
+            const saved = getSavedArticles();
+            const article = saved[index];
+            currentlyViewingArticle = article;
+
+            // Strict Reset Scroll track to the Top
+            document.getElementById('reader-view').scrollTop = 0;
+
+            document.getElementById('reader-title').innerText = article.title;
+            document.getElementById('reader-meta').innerText = article.source;
+            document.getElementById('reader-body').innerHTML = article.content;
+            document.getElementById('reader-save-btn').innerHTML = "💝 Saved to Scrapbook";
+            
+            const heroTarget = document.getElementById('reader-hero-target');
+            if(article.imageUrl) {
+                heroTarget.innerHTML = `<div class="reader-hero-frame"><img src="${article.imageUrl}"></div>`;
+            } else {
+                heroTarget.innerHTML = '';
+            }
+
+            document.getElementById('reader-view').classList.add('active');
+        }
+
+        function toggleTheme() {
+            const currentTheme = document.documentElement.getAttribute('data-theme');
+            const targetTheme = currentTheme === 'dark' ? 'light' : 'dark';
+            document.documentElement.setAttribute('data-theme', targetTheme);
+            localStorage.setItem('pref_display_theme', targetTheme);
+            updateThemeButtonLabel(targetTheme);
+        }
+
+        function updateThemeButtonLabel(theme) {
+            const btn = document.getElementById('theme-toggle');
+            btn.innerHTML = theme === 'dark' ? '🌙 Night Print' : '☀️ Day Print';
+        }
+
         function getTargetEditionDate() {
             const now = new Date();
             const fivePM = new Date(now.getFullYear(), now.getMonth(), now.getDate(), 17, 0, 0);
@@ -332,12 +656,11 @@
             if (now < fivePM) {
                 target.setDate(now.getDate() - 1);
             }
-            return target.toISOString().split('T')[0]; // Format: YYYY-MM-DD
+            return target.toISOString().split('T')[0];
         }
 
-        // Set Text Size Configuration
         function setTextSize(size) {
-            document.body.className = ''; 
+            document.body.classList.remove('text-medium', 'text-large', 'text-xlarge');
             document.body.classList.add('text-' + size);
             localStorage.setItem('pref_text_size', size);
             
@@ -347,33 +670,26 @@
             if(size === 'xlarge') document.getElementById('btn-xlrg').classList.add('active');
         }
 
-        // Clean HTML to ensure high quality, plain-text reading mode
         function sanitizeAndFormatContent(html) {
             const tempDiv = document.createElement('div');
             tempDiv.innerHTML = html;
             
-            // Strip out scripts, frames, styling, tracking pixels, ads, and pictures
             const removeTags = ['script', 'style', 'iframe', 'noscript', 'form', 'svg', 'button', 'img'];
             removeTags.forEach(tag => {
                 const els = tempDiv.getElementsByTagName(tag);
                 while(els.length > 0) { els[0].parentNode.removeChild(els[0]); }
             });
 
-            // Convert paragraphs to readable spacing
             const paragraphs = tempDiv.getElementsByTagName('p');
             let outputHTML = '';
             for (let p of paragraphs) {
                 const text = p.textContent.trim();
-                if (text.length > 30) { // filter out random blank meta-data lines
+                if (text.length > 35) { 
                     outputHTML += `<p>${text}</p>`;
                 }
             }
 
-            // Fallback if no paragraphs are parsed
-            if (!outputHTML) {
-                outputHTML = `<p>${tempDiv.textContent.trim()}</p>`;
-            }
-
+            if (!outputHTML) outputHTML = `<p>${tempDiv.textContent.trim()}</p>`;
             return outputHTML;
         }
 
@@ -382,47 +698,183 @@
             tempDiv.innerHTML = html;
             const cleanText = tempDiv.textContent || tempDiv.innerText || "";
             const trimmed = cleanText.replace(/\s+/g, ' ').trim();
-            return trimmed.length > 150 ? trimmed.substring(0, 147) + '...' : trimmed;
+            return trimmed.length > 140 ? trimmed.substring(0, 137) + '...' : trimmed;
         }
 
-        // Dynamic RSS parser supporting primary converter with an automatic failover proxy
-        async function fetchFeed(url) {
+        // Advanced Embedded Image Scraper fallback
+        function scrapeImage(itemData, rawHtmlDescription) {
+            if(itemData.thumbnail && !itemData.thumbnail.includes('avatar') && !itemData.thumbnail.includes('profile')) {
+                return itemData.thumbnail;
+            }
+            if(itemData.enclosure && itemData.enclosure.link && itemData.enclosure.type && itemData.enclosure.type.includes('image')) {
+                return itemData.enclosure.link;
+            }
+            const match = rawHtmlDescription.match(/<img[^>]+src="([^">]+)"/);
+            if(match && match[1]) {
+                return match[1];
+            }
+            return null;
+        }
+
+        // Live Deep Page Scraper: Pulls full high-res social cover image & clean text body
+        async function scrapeFullWebpage(url) {
             try {
-                // Primary: RSS2JSON (fastest and pre-parsed)
+                const res = await fetch(`https://api.allorigins.win/get?url=${encodeURIComponent(url)}`);
+                if(!res.ok) return null;
+                const json = await res.json();
+                
+                const parser = new DOMParser();
+                const doc = parser.parseFromString(json.contents, "text/html");
+                
+                // 1. Scrape absolute og:image URL
+                let imageUrl = null;
+                const ogImg = doc.querySelector('meta[property="og:image"]');
+                if (ogImg) imageUrl = ogImg.getAttribute('content');
+                if (!imageUrl) {
+                    const twitterImg = doc.querySelector('meta[name="twitter:image"]');
+                    if (twitterImg) imageUrl = twitterImg.getAttribute('content');
+                }
+                if (imageUrl && !imageUrl.startsWith('http')) {
+                    try { imageUrl = new URL(imageUrl, url).href; } catch(e) {}
+                }
+
+                // 2. Scrape entire text block omitting headers/footers/sidebars
+                const articleSelectors = [
+                    'article', 
+                    '.entry-content', 
+                    '.article-body-commercial-selector', 
+                    '.article-body-viewer-wrapper', 
+                    '.story-body', 
+                    '.main-content'
+                ];
+                
+                let bodyHTML = '';
+                for (let selector of articleSelectors) {
+                    const block = doc.querySelector(selector);
+                    if (block) {
+                        const paragraphs = block.querySelectorAll('p');
+                        const cleanList = [];
+                        paragraphs.forEach(p => {
+                            const txt = p.textContent.trim();
+                            if (txt.length > 50 && !p.closest('footer') && !p.closest('aside') && !p.closest('header')) {
+                                cleanList.push(`<p>${p.innerHTML}</p>`);
+                            }
+                        });
+                        if (cleanList.length > 2) {
+                            bodyHTML = cleanList.join('');
+                            break;
+                        }
+                    }
+                }
+
+                // Generic DOM crawl if customized selectors fail
+                if (!bodyHTML) {
+                    const allParagraphs = doc.querySelectorAll('p');
+                    const cleanList = [];
+                    allParagraphs.forEach(p => {
+                        const txt = p.textContent.trim();
+                        if (txt.length > 65 && 
+                            !p.closest('header') && !p.closest('footer') && 
+                            !p.closest('nav') && !p.closest('aside') && 
+                            !p.closest('.related') && !p.closest('.comment-list')) {
+                            cleanList.push(`<p>${p.innerHTML}</p>`);
+                        }
+                    });
+                    bodyHTML = cleanList.join('');
+                }
+
+                return { content: bodyHTML, imageUrl: imageUrl };
+            } catch (e) {
+                console.error("Scraper encountered standard connection block", e);
+                return null;
+            }
+        }
+
+        // Background Enrichment Engine: Enriches articles with full texts and pictures sequentially
+        async function enrichArticleBackground(sectionKey, index) {
+            const article = activeEditionData[sectionKey][index];
+            if (!article || article.isScraped) return;
+
+            const scraped = await scrapeFullWebpage(article.link);
+            if (scraped) {
+                if (scraped.imageUrl) article.imageUrl = scraped.imageUrl;
+                if (scraped.content) article.content = scraped.content;
+                article.isScraped = true;
+
+                // Re-render layout so images fade in cleanly on the front page
+                renderSection(`section-${sectionKey}`, activeEditionData[sectionKey], sectionKey);
+
+                // Update local storage layout cache
+                const targetDate = getTargetEditionDate();
+                localStorage.setItem('newspaper_edition_' + targetDate, JSON.stringify(activeEditionData));
+            }
+        }
+
+        async function triggerBackgroundEnrichment() {
+            const sections = ['canberra', 'australia', 'world'];
+            for (let section of sections) {
+                const list = activeEditionData[section];
+                if (!list) continue;
+                for (let i = 0; i < list.length; i++) {
+                    if (!list[i].isScraped) {
+                        // Sequential delay to prevent browser network choking
+                        await enrichArticleBackground(section, i);
+                    }
+                }
+            }
+        }
+
+        async function fetchFeed(url, sourceLabel) {
+            try {
                 const res = await fetch(`https://api.rss2json.com/v1/api.json?rss_url=${encodeURIComponent(url)}`);
-                if (!res.ok) throw new Error("rss2json fail");
-                const json = await res.ok ? await res.json() : null;
-                if (!json || json.status !== 'ok') throw new Error("rss2json data error");
-                return json.items.map(i => ({
-                    title: i.title,
-                    link: i.link,
-                    pubDate: i.pubDate,
-                    snippet: getSnippet(i.description),
-                    content: sanitizeAndFormatContent(i.content || i.description)
-                }));
+                if (!res.ok) throw new Error();
+                const json = await res.json();
+                if (!json || json.status !== 'ok') throw new Error();
+                
+                return json.items.map(i => {
+                    const htmlContext = i.content || i.description || '';
+                    return {
+                        title: i.title,
+                        link: i.link,
+                        snippet: getSnippet(i.description),
+                        content: sanitizeAndFormatContent(htmlContext),
+                        imageUrl: scrapeImage(i, htmlContext),
+                        source: sourceLabel,
+                        isScraped: false
+                    };
+                });
             } catch (err) {
-                console.warn("Switching to backup parsing framework due to network delay...");
-                // Secondary fallback: AllOrigins proxy + Native Browser Parser
+                // Fallback direct XML parser
                 const res = await fetch(`https://api.allorigins.win/get?url=${encodeURIComponent(url)}`);
                 const json = await res.json();
                 const parser = new DOMParser();
                 const xml = parser.parseFromString(json.contents, "text/xml");
                 const items = xml.querySelectorAll("item");
                 const list = [];
+                
                 items.forEach(item => {
                     const title = item.querySelector("title")?.textContent || "";
                     const link = item.querySelector("link")?.textContent || "";
-                    const pubDate = item.querySelector("pubDate")?.textContent || "";
                     const desc = item.querySelector("description")?.textContent || "";
-                    
-                    let content = "";
                     const contentNode = item.getElementsByTagNameNS("http://purl.org/rss/1.0/modules/content/", "encoded")[0];
-                    content = contentNode ? contentNode.textContent : desc;
+                    let content = contentNode ? contentNode.textContent : desc;
+
+                    let fallbackImg = null;
+                    const enc = item.querySelector("enclosure[type^='image']");
+                    if(enc) fallbackImg = enc.getAttribute("url");
+                    if(!fallbackImg) {
+                        const mMatch = desc.match(/<img[^>]+src="([^">]+)"/);
+                        if(mMatch) fallbackImg = mMatch[1];
+                    }
 
                     list.push({
-                        title, link, pubDate,
+                        title,
+                        link,
                         snippet: getSnippet(desc),
-                        content: sanitizeAndFormatContent(content)
+                        content: sanitizeAndFormatContent(content),
+                        imageUrl: fallbackImg,
+                        source: sourceLabel,
+                        isScraped: false
                     });
                 });
                 return list;
@@ -434,14 +886,14 @@
             const targetDate = getTargetEditionDate();
 
             try {
-                document.getElementById('loader-status').innerText = "Reaching out to Canberra local sources...";
-                const canberraRaw = await fetchFeed(FEEDS.canberra);
+                document.getElementById('loader-status').innerText = "Indexing Riotact Canberra records...";
+                const canberraRaw = await fetchFeed(FEEDS.canberra, "Riotact | Canberra");
                 
-                document.getElementById('loader-status').innerText = "Reviewing Australian national wires...";
-                const australiaRaw = await fetchFeed(FEEDS.australia);
+                document.getElementById('loader-status').innerText = "Reviewing Guardian Australia wire prints...";
+                const australiaRaw = await fetchFeed(FEEDS.australia, "The Guardian | National");
                 
-                document.getElementById('loader-status').innerText = "Sorting through International global cables...";
-                const worldRaw = await fetchFeed(FEEDS.world);
+                document.getElementById('loader-status').innerText = "Sorting global international dispatches...";
+                const worldRaw = await fetchFeed(FEEDS.world, "The Guardian | International");
 
                 const newspaper = {
                     date: targetDate,
@@ -454,7 +906,7 @@
                 activeEditionData = newspaper;
                 renderNewspaper();
             } catch (err) {
-                alert("The Printing Press encountered a minor system delay. Tap \"Force Reprint\" to try again.");
+                alert("The automatic printing deck encountered a script timeout. Refreshing may clear this.");
                 console.error(err);
             } finally {
                 document.getElementById('loader').style.display = 'none';
@@ -464,15 +916,16 @@
         function renderNewspaper() {
             if (!activeEditionData) return;
 
-            // Display dynamic Date in header
             const editionDateObj = new Date(activeEditionData.date);
             const options = { weekday: 'long', year: 'numeric', month: 'long', day: 'numeric' };
             document.getElementById('edition-date').innerText = editionDateObj.toLocaleDateString('en-AU', options);
 
-            // Populate Sections
             renderSection('section-canberra', activeEditionData.canberra, 'canberra');
             renderSection('section-australia', activeEditionData.australia, 'australia');
             renderSection('section-world', activeEditionData.world, 'world');
+
+            // Fire the quiet background crawler
+            triggerBackgroundEnrichment();
         }
 
         function renderSection(elementId, articles, sectionKey) {
@@ -480,7 +933,7 @@
             container.innerHTML = '';
             
             if(!articles || articles.length === 0) {
-                container.innerHTML = '<p style="font-style: italic;">This section is currently being restocked...</p>';
+                container.innerHTML = '<p style="font-style: italic; opacity: 0.7;">Compiling structural reports...</p>';
                 return;
             }
 
@@ -488,39 +941,103 @@
                 const card = document.createElement('div');
                 card.className = 'article-card';
                 card.onclick = () => readArticle(sectionKey, index);
+                
+                let imgBlock = '';
+                if(art.imageUrl) {
+                    imgBlock = `<div class="card-thumb-frame"><img src="${art.imageUrl}" alt="Column Image"></div>`;
+                }
+
                 card.innerHTML = `
-                    <div class="article-meta">Tonight's Column</div>
-                    <h3 class="article-title">${art.title}</h3>
-                    <p class="article-snippet">${art.snippet}</p>
-                    <div class="read-more">Read Full Column →</div>
+                    <div class="card-content-block">
+                        <div class="source-tag">${art.source}</div>
+                        <h3 class="article-title">${art.title}</h3>
+                        <p class="article-snippet">${art.snippet}</p>
+                        <div class="read-more">Read Full Column →</div>
+                    </div>
+                    ${imgBlock}
                 `;
                 container.appendChild(card);
             });
         }
 
-        function readArticle(sectionKey, index) {
+        async function readArticle(sectionKey, index) {
             const article = activeEditionData[sectionKey][index];
+            currentlyViewingArticle = article;
+
+            // Strict Reset Scroll to top of Reader container before rendering new text
+            document.getElementById('reader-view').scrollTop = 0;
+
+            // Open reader and display immediate high-end loading status
             document.getElementById('reader-title').innerText = article.title;
-            document.getElementById('reader-meta').innerText = `Evening Edition • ${sectionKey.toUpperCase()} DESK`;
+            document.getElementById('reader-meta').innerText = article.source;
+            document.getElementById('reader-body').innerHTML = `
+                <div class="spinner"></div>
+                <p style="text-align: center; color: var(--meta-color); font-style: italic;">
+                    Retrieving direct full text and editorial photos from the publisher archives...
+                </p>
+            `;
+            document.getElementById('reader-hero-target').innerHTML = '';
+            document.getElementById('reader-view').classList.add('active');
+
+            // If background scraper hasn't finished this article yet, prioritize and scrape immediately
+            if(!article.isScraped) {
+                const scraped = await scrapeFullWebpage(article.link);
+                if (scraped) {
+                    if (scraped.content) article.content = scraped.content;
+                    if (scraped.imageUrl) article.imageUrl = scraped.imageUrl;
+                    article.isScraped = true;
+
+                    // Update cached memory data
+                    const targetDate = getTargetEditionDate();
+                    localStorage.setItem('newspaper_edition_' + targetDate, JSON.stringify(activeEditionData));
+                    
+                    // Update preview cards
+                    renderSection(`section-${sectionKey}`, activeEditionData[sectionKey], sectionKey);
+                }
+            }
+
+            // Render absolute full article text
             document.getElementById('reader-body').innerHTML = article.content;
             
-            document.getElementById('reader-view').style.display = 'block';
-            window.scrollTo(0,0);
+            const saved = getSavedArticles();
+            const exists = saved.some(a => a.title === article.title);
+            document.getElementById('reader-save-btn').innerHTML = exists ? "💝 Saved to Scrapbook" : "💾 Save Column";
+
+            const heroTarget = document.getElementById('reader-hero-target');
+            if(article.imageUrl) {
+                heroTarget.innerHTML = `<div class="reader-hero-frame"><img src="${article.imageUrl}"></div>`;
+            } else {
+                heroTarget.innerHTML = '';
+            }
+
+            // Scroll safety lock to top
+            document.getElementById('reader-view').scrollTop = 0;
         }
 
         function closeArticle() {
-            document.getElementById('reader-view').style.display = 'none';
+            document.getElementById('reader-view').classList.remove('active');
+            currentlyViewingArticle = null;
         }
 
         function forceReprint() {
             printNewspaper();
         }
 
-        // Initialize App
         window.onload = () => {
-            // Restore text size preference
+            const savedTheme = localStorage.getItem('pref_display_theme') || 'light';
+            document.documentElement.setAttribute('data-theme', savedTheme);
+            updateThemeButtonLabel(savedTheme);
+
             const savedSize = localStorage.getItem('pref_text_size') || 'large';
             setTextSize(savedSize);
+
+            const savedStyle = localStorage.getItem('pref_font_style') || 'serif';
+            document.body.classList.remove('font-style-serif', 'font-style-sans');
+            document.body.classList.add('font-style-' + savedStyle);
+            document.getElementById('font-style-toggle').innerText = savedStyle === 'sans' ? 'Type: Screen' : 'Type: Print';
+
+            fetchCanberraWeather();
+            renderScrapbookShelf();
 
             const targetDate = getTargetEditionDate();
             const cachedPaper = localStorage.getItem('newspaper_edition_' + targetDate);
@@ -533,9 +1050,8 @@
             }
         };
 
-        // Register Service Worker for seamless offline reading
         if ('serviceWorker' in navigator) {
-            navigator.serviceWorker.register('sw.js').catch(err => console.log('SW registration skipped', err));
+            navigator.serviceWorker.register('sw.js').catch(err => console.log('SW initialization deferred', err));
         }
     </script>
 </body>
